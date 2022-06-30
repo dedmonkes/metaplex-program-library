@@ -34,5 +34,4 @@ members = [
   "token-metadata/program",
   "auction-house/program",
   "fixed-price-sale/program",
-  "candy-machine/program"
 ]
