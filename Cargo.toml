@@ -7,7 +7,7 @@ members=[
   "token-vault/test",
   "nft-packs/program",
   "fixed-price-sale/program",
-    "candy-machine/program"
+  "candy-machine/program"
 ]
 exclude = [
   "fixed-price-sale/cli",
