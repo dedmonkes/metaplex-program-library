@@ -7,9 +7,9 @@ use arrayref::array_ref;
 
 use mpl_token_metadata::{
     instruction::{
-        create_master_edition_v3, create_metadata_accounts_v2, update_metadata_accounts_v2,
+        create_master_edition_v3, create_metadata_accounts_v3, update_metadata_accounts_v2,
     },
-    state::{MAX_NAME_LENGTH, MAX_URI_LENGTH},
+    state::{MAX_NAME_LENGTH, MAX_URI_LENGTH, CollectionDetails},
 };
 use solana_gateway::{
     state::{GatewayTokenAccess, InPlaceGatewayToken},
@@ -593,7 +593,7 @@ pub fn handle_mint_nft<'info>(
         candy_machine_creator.to_account_info(),
     ];
     invoke_signed(
-        &create_metadata_accounts_v2(
+        &create_metadata_accounts_v3(
             ctx.accounts.token_metadata_program.key(),
             ctx.accounts.metadata.key(),
             ctx.accounts.mint.key(),
@@ -609,6 +609,9 @@ pub fn handle_mint_nft<'info>(
             candy_machine.data.is_mutable,
             None,
             None,
+            Some(CollectionDetails::V1{
+                size: 0,
+            })
         ),
         metadata_infos.as_slice(),
         &[&authority_seeds],
