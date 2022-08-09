@@ -1,11 +1,13 @@
 use anchor_lang::{prelude::*, Discriminator};
 use mpl_token_metadata::state::{MAX_CREATOR_LIMIT, MAX_SYMBOL_LENGTH};
 use spl_token::state::Mint;
+use phase_protocol::{state::{Roadmap, RoadmapStatus}, error::ErrorCode::*, utils::programs::DedSplGovernanceProgram};
+use crate::id;
 
 use crate::{
     assert_initialized, assert_owned_by, cmp_pubkeys,
     constants::{CONFIG_ARRAY_START, CONFIG_LINE_SIZE},
-    CandyError, CandyMachine, CandyMachineData,
+    CandyError, CandyMachine, CandyMachineData, MintingAccountRecordPlugin
 };
 
 /// Create a new candy machine.
@@ -17,9 +19,32 @@ pub struct InitializeCandyMachine<'info> {
     candy_machine: UncheckedAccount<'info>,
     /// CHECK: wallet can be any account and is not written to or read
     wallet: UncheckedAccount<'info>,
+
+    #[account(
+        init,
+        seeds = [b"phase_minting_account_record", roadmap.key().as_ref()],
+        space = MintingAccountRecordPlugin::space(),
+        bump,
+        constraint = minting_account_record_plugin.is_closed == false,
+        payer = payer,
+    )]
+    pub minting_account_record_plugin: Account<'info, MintingAccountRecordPlugin>,
+
     /// CHECK: authority can be any account and is not written to or read
     authority: UncheckedAccount<'info>,
+
+    #[account(
+        seeds = [b"roadmap", roadmap.governance_program_id.as_ref(), roadmap.realm.as_ref()], 
+        bump = roadmap.bump,
+        constraint = roadmap.team_authority == payer.key(),
+        constraint = roadmap.status == RoadmapStatus::Draft @RoadmapIncorrectState,
+        owner = phase_protocol::id()
+    )]
+    pub roadmap: Account<'info, Roadmap>,
+
+    #[account(mut)]
     payer: Signer<'info>,
+
     system_program: Program<'info, System>,
     rent: Sysvar<'info, Rent>,
 }
@@ -94,6 +119,23 @@ pub fn handle_initialize_candy_machine(
             data[vec_start + i] = as_bytes[i]
         }
     }
+
+    ctx.accounts.minting_account_record_plugin.roadmap = ctx.accounts.roadmap.key();
+    ctx.accounts.minting_account_record_plugin.program_id = id();
+    ctx.accounts.minting_account_record_plugin.minting_account =
+    candy_machine_account.key();
+    ctx.accounts.minting_account_record_plugin.max_supply = candy_machine.data.max_supply;
+    ctx.accounts.minting_account_record_plugin.price = candy_machine.data.price;
+    ctx.accounts.minting_account_record_plugin.quantity_left = candy_machine.data.max_supply;
+    ctx.accounts.minting_account_record_plugin.go_live_date = candy_machine.data.go_live_date;
+    ctx.accounts.minting_account_record_plugin.is_closed = false;
+    ctx.accounts.minting_account_record_plugin.collection_mint = None;
+    ctx.accounts
+        .minting_account_record_plugin
+        .collection_authority_record_signer =
+        Some(ctx.accounts.minting_account_record_plugin.key());
+    ctx.accounts.minting_account_record_plugin.bump =
+        *ctx.bumps.get("minting_account_record_plugin").unwrap();
 
     Ok(())
 }
