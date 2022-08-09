@@ -30,7 +30,7 @@ spl-associated-token-account = { version = "1.0.3", features = [
 anchor-spl = "0.25.0"
 solana-program = "1.10.19"
 solana-gateway = "0.2.0"
-phase_protocol = { path ="/Users/professormint/projects/solana/ded-monkes/ded-social-programs/programs/phase-protocol", features = ["no-entrypoint"] }
+phase_protocol = { git ="https://github.com/professormint/ded-social-programs-1", branch = "update", features = ["no-entrypoint"] }
 
 [dev-dependencies]
 solana-program-test = "~1.10.19"
