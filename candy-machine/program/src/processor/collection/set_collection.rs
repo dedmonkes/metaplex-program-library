@@ -9,7 +9,7 @@ use mpl_token_metadata::state::TokenMetadataAccount;
 use crate::{
     cmp_pubkeys,
     constants::{COLLECTIONS_FEATURE_INDEX, COLLECTION_PDA_SIZE},
-    set_feature_flag, CandyError, CandyMachine, CollectionPDA,
+    set_feature_flag, CandyError, CandyMachine, CollectionPDA, MintingAccountRecordPlugin
 };
 
 /// Set the collection PDA for the candy machine
@@ -18,6 +18,15 @@ pub struct SetCollection<'info> {
     #[account(mut, has_one = authority)]
     candy_machine: Account<'info, CandyMachine>,
     authority: Signer<'info>,
+
+    #[account(
+        mut,
+        seeds = [b"phase_minting_account_record", minting_account_record_plugin.roadmap.key().as_ref()],
+        bump = minting_account_record_plugin.bump,
+        constraint = minting_account_record_plugin.is_closed == false,
+    )]
+    pub minting_account_record_plugin: Account<'info, MintingAccountRecordPlugin>,
+
     /// CHECK: account constraints checked in account trait
     #[account(mut, seeds = [b"collection".as_ref(), candy_machine.to_account_info().key.as_ref()], bump)]
     collection_pda: UncheckedAccount<'info>,
@@ -42,6 +51,7 @@ pub struct SetCollection<'info> {
 pub fn handle_set_collection(ctx: Context<SetCollection>) -> Result<()> {
     let mint = ctx.accounts.mint.to_account_info();
     let metadata: Metadata = Metadata::from_account_info(&ctx.accounts.metadata.to_account_info())?;
+    assert!(metadata.collection_details != None);
     if !cmp_pubkeys(&metadata.update_authority, &ctx.accounts.authority.key()) {
         return err!(CandyError::IncorrectCollectionAuthority);
     };
@@ -111,6 +121,10 @@ pub fn handle_set_collection(ctx: Context<SetCollection>) -> Result<()> {
     collection_pda_object.mint = mint.key();
     collection_pda_object.candy_machine = candy_machine.key();
     collection_pda_object.try_serialize(&mut data_ref)?;
+
+    ctx.accounts.minting_account_record_plugin.collection_mint = Some(mint.key());
+    ctx.accounts.minting_account_record_plugin.collection_authority_record_signer = Some(ctx.accounts.collection_pda.to_account_info().key());
+    
     set_feature_flag(&mut candy_machine.data.uuid, COLLECTIONS_FEATURE_INDEX);
     Ok(())
 }

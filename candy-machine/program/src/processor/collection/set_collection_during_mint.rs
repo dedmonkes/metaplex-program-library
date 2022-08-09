@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use mpl_token_metadata::{instruction::set_and_verify_collection, utils::assert_derivation};
+use mpl_token_metadata::{instruction::set_and_verify_sized_collection_item, utils::assert_derivation};
 use solana_program::{
     program::invoke_signed, sysvar, sysvar::instructions::get_instruction_relative,
 };
@@ -109,7 +109,7 @@ pub fn handle_set_collection_during_mint(ctx: Context<SetCollectionDuringMint>) 
         ctx.accounts.collection_authority_record.to_account_info(),
     ];
     invoke_signed(
-        &set_and_verify_collection(
+        &set_and_verify_sized_collection_item(
             ctx.accounts.token_metadata_program.key(),
             ctx.accounts.metadata.key(),
             collection_pda.key(),

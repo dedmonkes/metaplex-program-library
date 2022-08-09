@@ -47,6 +47,7 @@ pub struct MintNFT<'info> {
     candy_machine_creator: UncheckedAccount<'info>,
 
     #[account(
+        mut,
         seeds = [b"phase_minting_account_record", minting_account_record_plugin.roadmap.key().as_ref()],
         bump = minting_account_record_plugin.bump,
         constraint = minting_account_record_plugin.is_closed == false,
@@ -533,7 +534,17 @@ pub fn handle_mint_nft<'info>(
         .ok_or(CandyError::NumericalOverflowError)? as usize;
 
     let config_line = get_config_line(candy_machine, modded, candy_machine.items_redeemed)?;
+    
+    ctx.accounts.minting_account_record_plugin.quantity_left = 
+    ctx.accounts.minting_account_record_plugin.quantity_left
+    .checked_sub(1)
+    .ok_or(CandyError::NumericalOverflowError)?;
 
+    ctx.accounts.minting_account_record_plugin.is_closed = match ctx.accounts.minting_account_record_plugin.quantity_left {
+        0 => true,
+        _ => false
+    };
+    
     candy_machine.items_redeemed = candy_machine
         .items_redeemed
         .checked_add(1)
@@ -643,6 +654,7 @@ pub fn handle_mint_nft<'info>(
         ],
         &[&authority_seeds],
     )?;
+    
 
     Ok(())
 }

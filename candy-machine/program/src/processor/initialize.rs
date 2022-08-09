@@ -124,9 +124,9 @@ pub fn handle_initialize_candy_machine(
     ctx.accounts.minting_account_record_plugin.program_id = id();
     ctx.accounts.minting_account_record_plugin.minting_account =
     candy_machine_account.key();
-    ctx.accounts.minting_account_record_plugin.max_supply = candy_machine.data.max_supply;
+    ctx.accounts.minting_account_record_plugin.max_supply = candy_machine.data.items_available;
     ctx.accounts.minting_account_record_plugin.price = candy_machine.data.price;
-    ctx.accounts.minting_account_record_plugin.quantity_left = candy_machine.data.max_supply;
+    ctx.accounts.minting_account_record_plugin.quantity_left = candy_machine.data.items_available;
     ctx.accounts.minting_account_record_plugin.go_live_date = candy_machine.data.go_live_date;
     ctx.accounts.minting_account_record_plugin.is_closed = false;
     ctx.accounts.minting_account_record_plugin.collection_mint = None;
