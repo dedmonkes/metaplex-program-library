@@ -1,8 +1,10 @@
 use std::{cell::RefMut, ops::Deref};
+use phase_protocol::{state::{Roadmap, RoadmapStatus}, error::ErrorCode::*, utils::programs::DedSplGovernanceProgram};
 
 use anchor_lang::prelude::*;
 use anchor_spl::token::Token;
 use arrayref::array_ref;
+
 use mpl_token_metadata::{
     instruction::{
         create_master_edition_v3, create_metadata_accounts_v2, update_metadata_accounts_v2,
@@ -28,7 +30,7 @@ use crate::{
     },
     utils::*,
     CandyError, CandyMachine, CandyMachineData, ConfigLine, EndSettingType, WhitelistMintMode,
-    WhitelistMintSettings,
+    WhitelistMintSettings, MintingAccountRecordPlugin
 };
 
 /// Mint a new NFT pseudo-randomly from the config array.
@@ -43,6 +45,14 @@ pub struct MintNFT<'info> {
     /// CHECK: account constraints checked in account trait
     #[account(seeds=[PREFIX.as_bytes(), candy_machine.key().as_ref()], bump=creator_bump)]
     candy_machine_creator: UncheckedAccount<'info>,
+
+    #[account(
+        seeds = [b"phase_minting_account_record", minting_account_record_plugin.roadmap.key().as_ref()],
+        bump = minting_account_record_plugin.bump,
+        constraint = minting_account_record_plugin.is_closed == false,
+    )]
+    pub minting_account_record_plugin: Account<'info, MintingAccountRecordPlugin>,
+
     payer: Signer<'info>,
     /// CHECK: wallet can be any account and is not written to or read
     #[account(mut)]

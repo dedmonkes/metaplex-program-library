@@ -3,7 +3,7 @@ use mpl_token_metadata::{instruction::set_and_verify_collection, utils::assert_d
 use solana_program::{
     program::invoke_signed, sysvar, sysvar::instructions::get_instruction_relative,
 };
-
+use mpl_token_metadata::state::TokenMetadataAccount;
 use crate::{cmp_pubkeys, CandyMachine, CollectionPDA};
 
 /// Sets and verifies the collection during a candy machine mint
