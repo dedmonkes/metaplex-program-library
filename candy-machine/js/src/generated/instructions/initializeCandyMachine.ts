@@ -38,8 +38,10 @@ export const initializeCandyMachineStruct = new beet.FixableBeetArgsStruct<
  *
  * @property [_writable_] candyMachine
  * @property [] wallet
+ * @property [_writable_] mintingAccountRecordPlugin
  * @property [] authority
- * @property [**signer**] payer
+ * @property [] roadmap
+ * @property [_writable_, **signer**] payer
  * @category Instructions
  * @category InitializeCandyMachine
  * @category generated
@@ -47,7 +49,9 @@ export const initializeCandyMachineStruct = new beet.FixableBeetArgsStruct<
 export type InitializeCandyMachineInstructionAccounts = {
   candyMachine: web3.PublicKey;
   wallet: web3.PublicKey;
+  mintingAccountRecordPlugin: web3.PublicKey;
   authority: web3.PublicKey;
+  roadmap: web3.PublicKey;
   payer: web3.PublicKey;
   systemProgram?: web3.PublicKey;
   rent?: web3.PublicKey;
@@ -88,13 +92,23 @@ export function createInitializeCandyMachineInstruction(
       isSigner: false,
     },
     {
+      pubkey: accounts.mintingAccountRecordPlugin,
+      isWritable: true,
+      isSigner: false,
+    },
+    {
       pubkey: accounts.authority,
       isWritable: false,
       isSigner: false,
     },
     {
-      pubkey: accounts.payer,
+      pubkey: accounts.roadmap,
       isWritable: false,
+      isSigner: false,
+    },
+    {
+      pubkey: accounts.payer,
+      isWritable: true,
       isSigner: true,
     },
     {

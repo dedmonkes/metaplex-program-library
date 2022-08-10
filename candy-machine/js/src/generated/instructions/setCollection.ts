@@ -24,6 +24,7 @@ export const setCollectionStruct = new beet.BeetArgsStruct<{
  *
  * @property [_writable_] candyMachine
  * @property [**signer**] authority
+ * @property [_writable_] mintingAccountRecordPlugin
  * @property [_writable_] collectionPda
  * @property [**signer**] payer
  * @property [] metadata
@@ -38,6 +39,7 @@ export const setCollectionStruct = new beet.BeetArgsStruct<{
 export type SetCollectionInstructionAccounts = {
   candyMachine: web3.PublicKey;
   authority: web3.PublicKey;
+  mintingAccountRecordPlugin: web3.PublicKey;
   collectionPda: web3.PublicKey;
   payer: web3.PublicKey;
   systemProgram?: web3.PublicKey;
@@ -76,6 +78,11 @@ export function createSetCollectionInstruction(
       pubkey: accounts.authority,
       isWritable: false,
       isSigner: true,
+    },
+    {
+      pubkey: accounts.mintingAccountRecordPlugin,
+      isWritable: true,
+      isSigner: false,
     },
     {
       pubkey: accounts.collectionPda,
