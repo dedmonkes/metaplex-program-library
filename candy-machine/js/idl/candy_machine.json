@@ -16,13 +16,23 @@
           "isSigner": false
         },
         {
+          "name": "mintingAccountRecordPlugin",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "authority",
           "isMut": false,
           "isSigner": false
         },
         {
-          "name": "payer",
+          "name": "roadmap",
           "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "payer",
+          "isMut": true,
           "isSigner": true
         },
         {
@@ -144,6 +154,11 @@
           "isSigner": true
         },
         {
+          "name": "mintingAccountRecordPlugin",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "collectionPda",
           "isMut": true,
           "isSigner": false
@@ -246,6 +261,11 @@
           "isSigner": false
         },
         {
+          "name": "mintingAccountRecordPlugin",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "payer",
           "isMut": false,
           "isSigner": true
@@ -303,7 +323,10 @@
         {
           "name": "clock",
           "isMut": false,
-          "isSigner": false
+          "isSigner": false,
+          "docs": [
+            "Account not actually used."
+          ]
         },
         {
           "name": "recentBlockhashes",
@@ -404,6 +427,9 @@
   "accounts": [
     {
       "name": "CandyMachine",
+      "docs": [
+        "Candy machine state and config data."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -436,6 +462,9 @@
     },
     {
       "name": "CollectionPDA",
+      "docs": [
+        "Collection PDA account"
+      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -449,11 +478,75 @@
           }
         ]
       }
+    },
+    {
+      "name": "MintingAccountRecordPlugin",
+      "docs": [
+        "* Phase plugin interface for using different minting contracts\n * The program plugin will implement this interface so we can get the needed\n * information to jusdge progress and setup of mint\n *"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "roadmap",
+            "type": "publicKey"
+          },
+          {
+            "name": "programId",
+            "type": "publicKey"
+          },
+          {
+            "name": "mintingAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "maxSupply",
+            "type": "u64"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "quantityLeft",
+            "type": "u64"
+          },
+          {
+            "name": "goLiveDate",
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "isClosed",
+            "type": "bool"
+          },
+          {
+            "name": "collectionMint",
+            "type": {
+              "option": "publicKey"
+            }
+          },
+          {
+            "name": "collectionAuthorityRecordSigner",
+            "type": {
+              "option": "publicKey"
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
     }
   ],
   "types": [
     {
       "name": "CandyMachineData",
+      "docs": [
+        "Candy machine settings data."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -467,10 +560,16 @@
           },
           {
             "name": "symbol",
+            "docs": [
+              "The symbol for the asset"
+            ],
             "type": "string"
           },
           {
             "name": "sellerFeeBasisPoints",
+            "docs": [
+              "Royalty basis points that goes to creators in secondary sales (0-10000)"
+            ],
             "type": "u16"
           },
           {
@@ -529,6 +628,9 @@
           },
           {
             "name": "gatekeeper",
+            "docs": [
+              "If [`Some`] requires gateway tokens on mint"
+            ],
             "type": {
               "option": {
                 "defined": "GatekeeperConfig"
@@ -540,6 +642,9 @@
     },
     {
       "name": "ConfigLine",
+      "docs": [
+        "Individual config line for storing NFT data pre-mint."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -549,6 +654,9 @@
           },
           {
             "name": "uri",
+            "docs": [
+              "URI pointing to JSON representing the asset"
+            ],
             "type": "string"
           }
         ]
@@ -594,6 +702,9 @@
     },
     {
       "name": "HiddenSettings",
+      "docs": [
+        "Hidden Settings for large mints used with offline data."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -647,15 +758,25 @@
     },
     {
       "name": "GatekeeperConfig",
+      "docs": [
+        "Configurations options for the gatekeeper."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "gatekeeperNetwork",
+            "docs": [
+              "The network for the gateway token required"
+            ],
             "type": "publicKey"
           },
           {
             "name": "expireOnUse",
+            "docs": [
+              "Whether or not the token should expire after minting.",
+              "The gatekeeper network must support this if true."
+            ],
             "type": "bool"
           }
         ]
@@ -875,7 +996,7 @@
   "metadata": {
     "address": "cndy3Z4yapfJBmL3ShUp5exZKqR3z33thTzeNMm2gRZ",
     "origin": "anchor",
-    "binaryVersion": "0.24.2",
-    "libVersion": "0.24.2"
+    "binaryVersion": "0.25.0",
+    "libVersion": "0.25.0"
   }
 }
