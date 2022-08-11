@@ -12,6 +12,7 @@ pub struct SetCollectionDuringMint<'info> {
     #[account(has_one = authority)]
     candy_machine: Account<'info, CandyMachine>,
     /// CHECK: account checked in CPI/instruction sysvar
+    #[account(mut)]
     metadata: UncheckedAccount<'info>,
     payer: Signer<'info>,
     #[account(mut, seeds = [b"collection".as_ref(), candy_machine.to_account_info().key.as_ref()], bump)]
@@ -25,6 +26,7 @@ pub struct SetCollectionDuringMint<'info> {
     /// CHECK: account checked in CPI
     collection_mint: UncheckedAccount<'info>,
     /// CHECK: account checked in CPI
+     #[account(mut)]
     collection_metadata: UncheckedAccount<'info>,
     /// CHECK: account checked in CPI
     collection_master_edition: UncheckedAccount<'info>,
@@ -59,8 +61,8 @@ pub fn handle_set_collection_during_mint(ctx: Context<SetCollectionDuringMint>) 
 
     let mint_ix_accounts = previous_instruction.accounts;
     let mint_ix_cm = mint_ix_accounts[0].pubkey;
-    let mint_ix_metadata = mint_ix_accounts[4].pubkey;
-    let signer = mint_ix_accounts[6].pubkey;
+    let mint_ix_metadata = mint_ix_accounts[5].pubkey;
+    let signer = mint_ix_accounts[7].pubkey;
     let candy_key = ctx.accounts.candy_machine.key();
     let metadata = ctx.accounts.metadata.key();
     let payer = ctx.accounts.payer.key();
