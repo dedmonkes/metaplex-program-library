@@ -1,4 +1,4 @@
-use anchor_lang::{prelude::*, Discriminator};
+use anchor_lang::{prelude::*, Discriminator, Accounts};
 use mpl_token_metadata::state::{MAX_CREATOR_LIMIT, MAX_SYMBOL_LENGTH};
 use spl_token::state::Mint;
 use phase_protocol::{state::{Roadmap, RoadmapStatus}, error::ErrorCode::*, utils::programs::DedSplGovernanceProgram};
@@ -25,20 +25,21 @@ pub struct InitializeCandyMachine<'info> {
         seeds = [b"phase_minting_account_record", roadmap.key().as_ref()],
         space = MintingAccountRecordPlugin::space(),
         bump,
-        constraint = minting_account_record_plugin.is_closed == false,
+        // constraint = minting_account_record_plugin.is_closed == false,
         payer = payer,
     )]
-    pub minting_account_record_plugin: Account<'info, MintingAccountRecordPlugin>,
+    pub minting_account_record_plugin: Box<Account<'info, MintingAccountRecordPlugin>>,
 
     /// CHECK: authority can be any account and is not written to or read
     authority: UncheckedAccount<'info>,
 
     #[account(
         seeds = [b"roadmap", roadmap.governance_program_id.as_ref(), roadmap.realm.as_ref()], 
-        bump = roadmap.bump,
+        bump,
         constraint = roadmap.team_authority == payer.key(),
         constraint = roadmap.status == RoadmapStatus::Draft @RoadmapIncorrectState,
-        owner = phase_protocol::id()
+        owner = phase_protocol::id(),
+        seeds::program = phase_protocol::id()
     )]
     pub roadmap: Account<'info, Roadmap>,
 
