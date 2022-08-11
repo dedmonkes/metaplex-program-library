@@ -55,7 +55,7 @@ export const removeCollectionInstructionDiscriminator = [223, 52, 106, 217, 61, 
  */
 export function createRemoveCollectionInstruction(
   accounts: RemoveCollectionInstructionAccounts,
-  programId = new web3.PublicKey('cndy3Z4yapfJBmL3ShUp5exZKqR3z33thTzeNMm2gRZ'),
+  programId = new web3.PublicKey('eERFprSmhDX7an71Kqg5ZjG3JoeMqLAZN4DGkvmqr3M'),
 ) {
   const [data] = removeCollectionStruct.serialize({
     instructionDiscriminator: removeCollectionInstructionDiscriminator,
