@@ -133,8 +133,7 @@ pub fn handle_initialize_candy_machine(
     ctx.accounts.minting_account_record_plugin.collection_mint = None;
     ctx.accounts
         .minting_account_record_plugin
-        .collection_authority_record_signer =
-        Some(ctx.accounts.minting_account_record_plugin.key());
+        .collection_authority_record_signer = None;
     ctx.accounts.minting_account_record_plugin.bump =
         *ctx.bumps.get("minting_account_record_plugin").unwrap();
 
