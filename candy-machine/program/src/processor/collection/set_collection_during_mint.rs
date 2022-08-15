@@ -4,7 +4,7 @@ use solana_program::{
     program::invoke_signed, sysvar, sysvar::instructions::get_instruction_relative,
 };
 use mpl_token_metadata::state::TokenMetadataAccount;
-use crate::{cmp_pubkeys, CandyMachine, CollectionPDA, MintingAccountRecordPlugin};
+use crate::{cmp_pubkeys, CandyMachine, CollectionPDA};
 
 /// Sets and verifies the collection during a candy machine mint
 #[derive(Accounts)]
@@ -34,13 +34,6 @@ pub struct SetCollectionDuringMint<'info> {
     authority: UncheckedAccount<'info>,
     /// CHECK: account checked in CPI
     collection_authority_record: UncheckedAccount<'info>,
-    #[account(
-        seeds = [b"phase_minting_account_record", minting_account_record_plugin.roadmap.as_ref()],
-        bump,
-        constraint = minting_account_record_plugin.is_closed == false,
-    )]
-    pub minting_account_record_plugin: Box<Account<'info, MintingAccountRecordPlugin>>,
-
 }
 
 pub fn handle_set_collection_during_mint(ctx: Context<SetCollectionDuringMint>) -> Result<()> {
