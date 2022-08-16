@@ -1,12 +1,14 @@
 use anchor_lang::{prelude::*, Discriminator, Accounts};
 use mpl_token_metadata::state::{MAX_CREATOR_LIMIT, MAX_SYMBOL_LENGTH};
 use spl_token::state::Mint;
-use phase_protocol::{state::{Roadmap, RoadmapStatus}, error::ErrorCode::*, utils::programs::DedSplGovernanceProgram};
+use anchor_spl::token::TokenAccount;
+
+use phase_protocol::{state::{Roadmap, RoadmapStatus, get_roadmap_pool_address}, error::ErrorCode::*, utils::programs::DedSplGovernanceProgram};
 use crate::id;
 
 use crate::{
     assert_initialized, assert_owned_by, cmp_pubkeys,
-    constants::{CONFIG_ARRAY_START, CONFIG_LINE_SIZE},
+    constants::{CONFIG_ARRAY_START, CONFIG_LINE_SIZE, WRAPPED_SOL_ADDRESS},
     CandyError, CandyMachine, CandyMachineData, MintingAccountRecordPlugin
 };
 
@@ -73,14 +75,30 @@ pub fn handle_initialize_candy_machine(
         let _token_mint: Mint = assert_initialized(token_mint_info)?;
         let token_account: spl_token::state::Account = assert_initialized(&ctx.accounts.wallet)?;
 
+
+
         assert_owned_by(token_mint_info, &spl_token::id())?;
-        assert_owned_by(&ctx.accounts.wallet, &spl_token::id())?;
+        
+        // assert_owned_by(&ctx.accounts.wallet, &ctx.accounts.roadmap.key())?;
 
         if !cmp_pubkeys(&token_account.mint, &token_mint_info.key()) {
             return err!(CandyError::MintMismatch);
         }
 
+        if !cmp_pubkeys(&token_account.mint, &WRAPPED_SOL_ADDRESS){
+            return err!(CandyError::IncorrectTokenMint)
+        }
+
+        let roadmap_pool : Pubkey = get_roadmap_pool_address(&ctx.accounts.roadmap.key(), &token_mint_info.key());
+
+        if !cmp_pubkeys(&roadmap_pool, &ctx.accounts.wallet.key()){
+            return err!(CandyError::IncorrectTokenAccount)
+        }
+
         candy_machine.token_mint = Some(*token_mint_info.key);
+    }
+    else{
+        return err!(CandyError::NoTokenMint)
     }
 
     let mut array_of_zeroes = vec![];

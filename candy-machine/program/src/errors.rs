@@ -74,4 +74,10 @@ pub enum CandyError {
     CandyCollectionRequiresRetainAuthority,
     #[msg("Error within Gateway program")]
     GatewayProgramError,
-}
+    #[msg("Token account must a pool of the roadmap associated")]
+    IncorrectTokenAccount,
+    #[msg("Token mint must a mint support by phase")]
+    IncorrectTokenMint,
+    #[msg("Token mint for payout to phase not included")]
+    NoTokenMint,
+}   
