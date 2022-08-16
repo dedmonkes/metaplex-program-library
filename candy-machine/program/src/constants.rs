@@ -16,6 +16,7 @@ pub const GUMDROP_ID: Pubkey =
 pub const CUPCAKE_ID: Pubkey =
     solana_program::pubkey!("cakeGJxEdGpZ3MJP8sM3QypwzuzZpko1ueonUQgKLPE");
 pub const A_TOKEN: Pubkey = solana_program::pubkey!("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
+pub const WRAPPED_SOL_ADDRESS : Pubkey = solana_program::pubkey!("So11111111111111111111111111111111111111112");
 pub const CONFIG_ARRAY_START: usize = 8 + // key
     32 + // authority
     32 + //wallet

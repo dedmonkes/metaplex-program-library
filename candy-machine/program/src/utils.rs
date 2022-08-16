@@ -50,6 +50,7 @@ pub fn assert_valid_go_live<'info>(
 
 pub fn assert_owned_by(account: &AccountInfo, owner: &Pubkey) -> Result<()> {
     if !cmp_pubkeys(account.owner, owner) {
+        msg!("{} {}", account.owner.to_string(), owner.to_string());
         Err(CandyError::IncorrectOwner.into())
     } else {
         Ok(())
