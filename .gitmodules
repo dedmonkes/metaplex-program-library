@@ -1,4 +1,4 @@
 [submodule "modules/phase"]
 	path = modules/phase
-	url = https://github.com/professormint/ded-social-programs-1.git
-	branch = update
+	url = https://github.com/dedmonkes/ded-social-programs.git
+	branch = master
