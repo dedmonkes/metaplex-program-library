@@ -3,7 +3,7 @@ use mpl_token_metadata::state::{MAX_CREATOR_LIMIT, MAX_SYMBOL_LENGTH};
 use spl_token::state::Mint;
 use anchor_spl::token::TokenAccount;
 
-use phase_protocol::{state::{Roadmap, RoadmapStatus, get_roadmap_pool_address}, error::ErrorCode::*, utils::programs::DedSplGovernanceProgram};
+use phase_protocol::{state::{Roadmap, RoadmapStatus, get_roadmap_pool_address}, error::PhaseError::*, utils::programs::DedSplGovernanceProgram};
 use crate::id;
 
 use crate::{

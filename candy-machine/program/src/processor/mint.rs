@@ -1,5 +1,5 @@
 use std::{cell::RefMut, ops::Deref};
-use phase_protocol::{state::{Roadmap, RoadmapStatus}, error::ErrorCode::*, utils::programs::DedSplGovernanceProgram};
+use phase_protocol::{state::{Roadmap, RoadmapStatus}, error::PhaseError::*, utils::programs::DedSplGovernanceProgram};
 
 use anchor_lang::prelude::*;
 use anchor_spl::token::Token;
