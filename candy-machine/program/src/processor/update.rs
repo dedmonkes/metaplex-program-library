@@ -51,17 +51,11 @@ pub fn handle_update_candy_machine(
     }
 
     let old_uuid = candy_machine.data.uuid.clone();
-    candy_machine.wallet = ctx.accounts.wallet.key();
     if is_feature_active(&old_uuid, COLLECTIONS_FEATURE_INDEX) && !data.retain_authority {
         return err!(CandyError::CandyCollectionRequiresRetainAuthority);
     }
     candy_machine.data = data;
     candy_machine.data.uuid = old_uuid;
 
-    if !ctx.remaining_accounts.is_empty() {
-        candy_machine.token_mint = Some(ctx.remaining_accounts[0].key())
-    } else {
-        candy_machine.token_mint = None;
-    }
     Ok(())
 }
