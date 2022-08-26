@@ -7,6 +7,7 @@ use anchor_lang::prelude::*;
 pub struct CandyMachine {
     pub authority: Pubkey,
     pub wallet: Pubkey,
+    pub roadmap : Pubkey,
     pub token_mint: Option<Pubkey>,
     pub items_redeemed: u64,
     pub data: CandyMachineData,
