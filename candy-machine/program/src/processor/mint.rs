@@ -40,6 +40,7 @@ pub struct MintNFT<'info> {
     #[account(
     mut,
     has_one = wallet
+    has_one = roadmap
     )]
     candy_machine: Box<Account<'info, CandyMachine>>,
     /// CHECK: account constraints checked in account trait
@@ -51,6 +52,7 @@ pub struct MintNFT<'info> {
         seeds = [b"phase_minting_account_record", minting_account_record_plugin.roadmap.key().as_ref()],
         bump = minting_account_record_plugin.bump,
         constraint = minting_account_record_plugin.is_closed == false,
+        constraint = minting_account_record_plugin.roadmap = roadmap.key()
     )]
     pub minting_account_record_plugin: Account<'info, MintingAccountRecordPlugin>,
 
