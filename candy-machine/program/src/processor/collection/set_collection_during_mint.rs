@@ -61,8 +61,8 @@ pub fn handle_set_collection_during_mint(ctx: Context<SetCollectionDuringMint>) 
 
     let mint_ix_accounts = previous_instruction.accounts;
     let mint_ix_cm = mint_ix_accounts[0].pubkey;
-    let mint_ix_metadata = mint_ix_accounts[5].pubkey;
-    let signer = mint_ix_accounts[7].pubkey;
+    let mint_ix_metadata = mint_ix_accounts[6].pubkey;
+    let signer = mint_ix_accounts[8].pubkey;
     let candy_key = ctx.accounts.candy_machine.key();
     let metadata = ctx.accounts.metadata.key();
     let payer = ctx.accounts.payer.key();

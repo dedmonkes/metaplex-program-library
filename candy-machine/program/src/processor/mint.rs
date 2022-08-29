@@ -1,7 +1,7 @@
 use std::{cell::RefMut, ops::Deref};
 use phase_protocol::{state::{Roadmap, RoadmapStatus}, error::PhaseError::*, utils::programs::DedSplGovernanceProgram};
 
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, Accounts, AnchorDeserialize};
 use anchor_spl::token::Token;
 use arrayref::array_ref;
 
@@ -38,8 +38,9 @@ use crate::{
 #[instruction(creator_bump: u8)]
 pub struct MintNFT<'info> {
     #[account(
-    mut,
-    has_one = wallet
+        mut,
+        has_one = wallet,
+        has_one = roadmap
     )]
     candy_machine: Box<Account<'info, CandyMachine>>,
     /// CHECK: account constraints checked in account trait
@@ -51,8 +52,16 @@ pub struct MintNFT<'info> {
         seeds = [b"phase_minting_account_record", minting_account_record_plugin.roadmap.key().as_ref()],
         bump = minting_account_record_plugin.bump,
         constraint = minting_account_record_plugin.is_closed == false,
+        constraint = minting_account_record_plugin.roadmap == roadmap.key()
     )]
     pub minting_account_record_plugin: Account<'info, MintingAccountRecordPlugin>,
+
+    #[account(
+        seeds = [b"roadmap", roadmap.governance_program_id.as_ref(), roadmap.realm.as_ref()], 
+        seeds::program = phase_protocol::id(),
+        bump = roadmap.bump
+    )]
+    pub roadmap: Box<Account<'info, Roadmap>>,
 
     payer: Signer<'info>,
     /// CHECK: wallet can be any account and is not written to or read
@@ -631,7 +640,16 @@ pub fn handle_mint_nft<'info>(
         &[&authority_seeds],
     )?;
 
-    let mut new_update_authority = Some(candy_machine.authority);
+    // No need to check token metadata account is correct because
+    // it will fail on CPI calls 
+    let mut new_update_authority = Some(Pubkey::find_program_address(
+        &[
+            b"account-governance", 
+            ctx.accounts.roadmap.realm.as_ref(), 
+            ctx.accounts.metadata.key().as_ref()
+        ], 
+        &ctx.accounts.token_metadata_program.key(),
+    ).0);
 
     if !candy_machine.data.retain_authority {
         new_update_authority = Some(ctx.accounts.update_authority.key());

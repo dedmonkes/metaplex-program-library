@@ -68,6 +68,7 @@ pub fn handle_initialize_candy_machine(
         wallet: ctx.accounts.wallet.key(),
         token_mint: None,
         items_redeemed: 0,
+        roadmap: ctx.accounts.roadmap.key()
     };
 
     if !ctx.remaining_accounts.is_empty() {
@@ -154,7 +155,6 @@ pub fn handle_initialize_candy_machine(
         .collection_authority_record_signer = None;
     ctx.accounts.minting_account_record_plugin.bump =
         *ctx.bumps.get("minting_account_record_plugin").unwrap();
-
     Ok(())
 }
 
