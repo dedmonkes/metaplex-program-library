@@ -60,9 +60,6 @@ pub mod candy_machine {
         handle_mint_nft(ctx, creator_bump)
     }
 
-    pub fn set_collection_during_mint(ctx: Context<SetCollectionDuringMint>) -> Result<()> {
-        handle_set_collection_during_mint(ctx)
-    }
 
     pub fn withdraw_funds<'info>(ctx: Context<WithdrawFunds<'info>>) -> Result<()> {
         handle_withdraw_funds(ctx)
