@@ -39,7 +39,7 @@ pub struct InitializeCandyMachine<'info> {
         seeds = [b"roadmap", roadmap.governance_program_id.as_ref(), roadmap.realm.as_ref()], 
         bump,
         constraint = roadmap.team_authority == payer.key(),
-        constraint = roadmap.status == RoadmapStatus::Draft @RoadmapIncorrectState,
+        constraint = roadmap.state == RoadmapStatus::Draft @RoadmapIncorrectState,
         owner = phase_protocol::id(),
         seeds::program = phase_protocol::id()
     )]
