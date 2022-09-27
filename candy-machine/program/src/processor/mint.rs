@@ -110,8 +110,6 @@ pub struct MintNFT<'info> {
     collection_metadata: UncheckedAccount<'info>,
     /// CHECK: account checked in CPI
     collection_master_edition: UncheckedAccount<'info>,
-    /// CHECK: authority can be any account and is checked in CPI
-    collection_authority: UncheckedAccount<'info>,
     /// CHECK: account checked in CPI
     collection_authority_record: UncheckedAccount<'info>,
     // > Only needed if candy machine has a gatekeeper
