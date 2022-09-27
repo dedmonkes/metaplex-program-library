@@ -1,10 +1,17 @@
 use anchor_lang::prelude::*;
+use anchor_spl::token::{Mint, Token};
+
 use mpl_token_metadata::{
     assertions::collection::assert_master_edition, instruction::approve_collection_authority,
     state::Metadata, utils::create_or_allocate_account_raw,
 };
 use solana_program::program::invoke;
 use mpl_token_metadata::state::TokenMetadataAccount;
+use solana_program::{
+    instruction::{AccountMeta, Instruction},
+    pubkey::Pubkey,
+    sysvar,
+};
 
 use crate::{
     cmp_pubkeys,
@@ -46,6 +53,7 @@ pub struct SetCollection<'info> {
     /// CHECK: account checked in CPI
     #[account(address = mpl_token_metadata::id())]
     token_metadata_program: UncheckedAccount<'info>,
+    token_program : Program<'info, Token>
 }
 
 pub fn handle_set_collection(ctx: Context<SetCollection>) -> Result<()> {
@@ -69,6 +77,20 @@ pub fn handle_set_collection(ctx: Context<SetCollection>) -> Result<()> {
     }
     assert_master_edition(&metadata, &edition)?;
     if authority_record.data_is_empty() {
+        let approve_collection_authority_ix = &mut approve_collection_authority(
+            ctx.accounts.token_metadata_program.key(),
+            authority_record.key(),
+            ctx.accounts.collection_pda.to_account_info().key(),
+            ctx.accounts.authority.key(),
+            ctx.accounts.payer.key(),
+            ctx.accounts.metadata.key(),
+            *mint.key,
+        );
+
+        let account_keys = &mut approve_collection_authority_ix.accounts;
+        account_keys.push(AccountMeta::new_readonly(sysvar::rent::id(), false));
+    
+
         let approve_collection_infos = vec![
             authority_record.clone(),
             ctx.accounts.collection_pda.to_account_info(),
@@ -85,15 +107,7 @@ pub fn handle_set_collection(ctx: Context<SetCollection>) -> Result<()> {
             ctx.accounts.collection_pda.key
         );
         invoke(
-            &approve_collection_authority(
-                ctx.accounts.token_metadata_program.key(),
-                authority_record.key(),
-                ctx.accounts.collection_pda.to_account_info().key(),
-                ctx.accounts.authority.key(),
-                ctx.accounts.payer.key(),
-                ctx.accounts.metadata.key(),
-                *mint.key,
-            ),
+            approve_collection_authority_ix,
             approve_collection_infos.as_slice(),
         )?;
         msg!(

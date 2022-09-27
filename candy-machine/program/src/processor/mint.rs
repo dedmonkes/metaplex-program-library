@@ -110,8 +110,6 @@ pub struct MintNFT<'info> {
     collection_metadata: UncheckedAccount<'info>,
     /// CHECK: account checked in CPI
     collection_master_edition: UncheckedAccount<'info>,
-    /// CHECK: authority can be any account and is checked in CPI
-    collection_authority: UncheckedAccount<'info>,
     /// CHECK: account checked in CPI
     collection_authority_record: UncheckedAccount<'info>,
     // > Only needed if candy machine has a gatekeeper
@@ -637,45 +635,53 @@ pub fn handle_mint_nft<'info>(
     let collection_pda_seeds = [b"collection".as_ref(), candy_key.as_ref()];
     let bump = assert_derivation(&crate::id(), &ctx.accounts.collection_pda.to_account_info(), &collection_pda_seeds)?;
     let collection_signer_seeds = [b"collection".as_ref(),candy_key.as_ref(), &[bump]];
+    msg!("{:?}", candy_machine);
+    let create_metadata_accounts_v3_ix = &mut create_metadata_accounts_v3(
+        ctx.accounts.token_metadata_program.key(),
+        ctx.accounts.metadata.key(),
+        ctx.accounts.mint.key(),
+        ctx.accounts.mint_authority.key(),
+        ctx.accounts.payer.key(),
+        candy_machine_creator.key(),
+        config_line.name,
+        candy_machine.data.symbol.clone(),
+        config_line.uri,
+        Some(creators),
+        candy_machine.data.seller_fee_basis_points,
+        true,
+        candy_machine.data.is_mutable,
+        Some(Collection {
+            verified : false,
+            key: ctx.accounts.collection_mint.key()
+        }),
+        None,
+        None
+    
+    );
+    let account_keys = &mut create_metadata_accounts_v3_ix.accounts;
+    account_keys.push(AccountMeta::new_readonly(sysvar::rent::id(), false));
+
+    let create_master_edition_ix = &mut create_master_edition_v3(
+        ctx.accounts.token_metadata_program.key(),
+        ctx.accounts.master_edition.key(),
+        ctx.accounts.mint.key(),
+        candy_machine_creator.key(),
+        ctx.accounts.mint_authority.key(),
+        ctx.accounts.metadata.key(),
+        ctx.accounts.payer.key(),
+        Some(candy_machine.data.max_supply),
+    );
+
+    let master_edition_accounts = &mut create_master_edition_ix.accounts;
+    master_edition_accounts.push(AccountMeta::new_readonly(sysvar::rent::id(), false));
 
     invoke_signed(
-        &create_metadata_accounts_v3(
-            ctx.accounts.token_metadata_program.key(),
-            ctx.accounts.metadata.key(),
-            ctx.accounts.mint.key(),
-            ctx.accounts.mint_authority.key(),
-            ctx.accounts.payer.key(),
-            candy_machine_creator.key(),
-            config_line.name,
-            candy_machine.data.symbol.clone(),
-            config_line.uri,
-            Some(creators),
-            candy_machine.data.seller_fee_basis_points,
-            true,
-            candy_machine.data.is_mutable,
-            Some(Collection {
-                verified : false,
-                key: ctx.accounts.collection_mint.key()
-            }),
-            None,
-            Some(CollectionDetails::V1{
-                size: 0,
-            })
-        ),
+        create_metadata_accounts_v3_ix,
         metadata_infos.as_slice(),
         &[&authority_seeds],
     )?;
     invoke_signed(
-        &create_master_edition_v3(
-            ctx.accounts.token_metadata_program.key(),
-            ctx.accounts.master_edition.key(),
-            ctx.accounts.mint.key(),
-            candy_machine_creator.key(),
-            ctx.accounts.mint_authority.key(),
-            ctx.accounts.metadata.key(),
-            ctx.accounts.payer.key(),
-            Some(candy_machine.data.max_supply),
-        ),
+        create_master_edition_ix,
         master_edition_infos.as_slice(),
         &[&authority_seeds],
     )?;
