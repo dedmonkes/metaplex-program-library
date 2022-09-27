@@ -662,22 +662,28 @@ pub fn handle_mint_nft<'info>(
     );
     let account_keys = &mut create_metadata_accounts_v3_ix.accounts;
     account_keys.push(AccountMeta::new_readonly(sysvar::rent::id(), false));
+
+    let create_master_edition_ix = &mut create_master_edition_v3(
+        ctx.accounts.token_metadata_program.key(),
+        ctx.accounts.master_edition.key(),
+        ctx.accounts.mint.key(),
+        candy_machine_creator.key(),
+        ctx.accounts.mint_authority.key(),
+        ctx.accounts.metadata.key(),
+        ctx.accounts.payer.key(),
+        Some(candy_machine.data.max_supply),
+    );
+
+    let master_edition_accounts = &mut create_master_edition_ix.accounts;
+    master_edition_accounts.push(AccountMeta::new_readonly(sysvar::rent::id(), false));
+
     invoke_signed(
         create_metadata_accounts_v3_ix,
         metadata_infos.as_slice(),
         &[&authority_seeds],
     )?;
     invoke_signed(
-        &create_master_edition_v3(
-            ctx.accounts.token_metadata_program.key(),
-            ctx.accounts.master_edition.key(),
-            ctx.accounts.mint.key(),
-            candy_machine_creator.key(),
-            ctx.accounts.mint_authority.key(),
-            ctx.accounts.metadata.key(),
-            ctx.accounts.payer.key(),
-            Some(candy_machine.data.max_supply),
-        ),
+        create_master_edition_ix,
         master_edition_infos.as_slice(),
         &[&authority_seeds],
     )?;
