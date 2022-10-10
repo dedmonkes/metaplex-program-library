@@ -1,5 +1,5 @@
 use std::{cell::RefMut, ops::Deref};
-use phase_protocol::{state::{Roadmap, RoadmapState}, error::PhaseError::*, utils::programs::DedSplGovernanceProgram};
+use phase_protocol_sdk::state::{Roadmap, RoadmapState};
 
 use anchor_lang::{prelude::*, Accounts, AnchorDeserialize};
 use anchor_spl::token::Token;
@@ -60,7 +60,7 @@ pub struct MintNFT<'info> {
 
     #[account(
         seeds = [b"roadmap", roadmap.governance_program_id.as_ref(), roadmap.realm.as_ref()], 
-        seeds::program = phase_protocol::id(),
+        seeds::program = phase_protocol_sdk::id(),
         bump = roadmap.bump
     )]
     pub roadmap: Box<Account<'info, Roadmap>>,

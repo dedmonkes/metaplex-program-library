@@ -30,7 +30,7 @@ spl-associated-token-account = { version = "1.0.3", features = [
 anchor-spl = "0.25.0"
 solana-program = "1.10.29"
 solana-gateway = "0.2.0"
-phase_protocol = { path ="../../modules/phase/programs/phase-protocol", features = ["no-entrypoint"] }
+phase-protocol-sdk = { version ="0.1.0", features = ["no-entrypoint"] }
 
 [dev-dependencies]
 solana-program-test = "~1.10.19"
