@@ -111,7 +111,7 @@ pub struct GatekeeperConfig {
     pub expire_on_use: bool,
 }
 /**
- * Phase plugin interface for using different minting contracts
+ * Plugin interface for using different minting contracts
  * The program plugin will implement this interface so we can get the needed
  * information to jusdge progress and setup of mint
  *
@@ -155,22 +155,25 @@ pub struct MintingAccountRecordPlugin {
     pub collection_authority_record_signer: Option<Pubkey>,
 
     pub bump: u8,
+
+    pub reserved: [u8; 128],
 }
 
 impl MintingAccountRecordPlugin {
     pub fn space() -> usize {
         8 +
-        4 + std::mem::size_of::<Pubkey>() + // roadmap
-        4 + std::mem::size_of::<Pubkey>() + // program_id
-        4 + std::mem::size_of::<Pubkey>() +  // minting account
-        16 + // max supply
-        16 + //price
-        16 + //quantity left
-        16 + // go live
+        std::mem::size_of::<Pubkey>() + // roadmap
+        std::mem::size_of::<Pubkey>() + // program_id
+        std::mem::size_of::<Pubkey>() +  // minting account
+        std::mem::size_of::<u64>() + // max supply
+        std::mem::size_of::<u64>() + //price
+        std::mem::size_of::<u64>() + //quantity left
+        std::mem::size_of::<Option<i64>>() + // go live
         1 + //is_closed
-        4 + std::mem::size_of::<Pubkey>() + // collection_mint
-        4 + std::mem::size_of::<Pubkey>() + // collection_authority_record_signer
-        1 // bump
+        std::mem::size_of::<Option<Pubkey>>() + // collection_mint
+        std::mem::size_of::<Option<Pubkey>>() + // collection_authority_record_signer
+        1 + // bump 
+        128
     }
 }
 

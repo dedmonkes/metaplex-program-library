@@ -3,7 +3,7 @@ use mpl_token_metadata::state::{MAX_CREATOR_LIMIT, MAX_SYMBOL_LENGTH};
 use spl_token::state::Mint;
 use anchor_spl::token::TokenAccount;
 
-use phase_protocol::{state::{Roadmap, RoadmapState, get_roadmap_pool_address}, error::PhaseError::*, utils::programs::DedSplGovernanceProgram};
+use phase_protocol_sdk::{state::{Roadmap, RoadmapState, get_roadmap_pool_address}};
 use crate::id;
 
 use crate::{
@@ -39,9 +39,9 @@ pub struct InitializeCandyMachine<'info> {
         seeds = [b"roadmap", roadmap.governance_program_id.as_ref(), roadmap.realm.as_ref()], 
         bump,
         constraint = roadmap.team_authority == payer.key(),
-        constraint = roadmap.state == RoadmapState::Draft @RoadmapIncorrectState,
-        owner = phase_protocol::id(),
-        seeds::program = phase_protocol::id()
+        constraint = roadmap.state == RoadmapState::Draft,
+        owner = phase_protocol_sdk::id(),
+        seeds::program = phase_protocol_sdk::id()
     )]
     pub roadmap: Account<'info, Roadmap>,
 

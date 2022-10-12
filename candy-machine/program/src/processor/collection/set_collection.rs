@@ -32,7 +32,7 @@ pub struct SetCollection<'info> {
         bump = minting_account_record_plugin.bump,
         constraint = minting_account_record_plugin.is_closed == false,
     )]
-    pub minting_account_record_plugin: Account<'info, MintingAccountRecordPlugin>,
+    pub minting_account_record_plugin: Box<Account<'info, MintingAccountRecordPlugin>>,
 
     /// CHECK: account constraints checked in account trait
     #[account(mut, seeds = [b"collection".as_ref(), candy_machine.to_account_info().key.as_ref()], bump)]

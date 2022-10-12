@@ -1,5 +1,1 @@
 
-[submodule "phase"]
-	path = modules/phase
-	url = https://github.com/dedmonkes/ded-social-programs.git
-	branch = master

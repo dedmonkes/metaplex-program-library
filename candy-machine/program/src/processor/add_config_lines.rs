@@ -13,7 +13,7 @@ use crate::{
 #[derive(Accounts)]
 pub struct AddConfigLines<'info> {
     #[account(mut, has_one = authority)]
-    candy_machine: Account<'info, CandyMachine>,
+    candy_machine: Box<Account<'info, CandyMachine>>,
     authority: Signer<'info>,
 }
 
