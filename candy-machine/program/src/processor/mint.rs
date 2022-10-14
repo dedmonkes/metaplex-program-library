@@ -61,6 +61,7 @@ pub struct MintNFT<'info> {
     #[account(
         seeds = [b"roadmap", roadmap.governance_program_id.as_ref(), roadmap.realm.as_ref()], 
         seeds::program = phase_protocol_sdk::id(),
+        constraint = roadmap.state == RoadmapState::LockedForMint,
         bump = roadmap.bump
     )]
     pub roadmap: Box<Account<'info, Roadmap>>,
